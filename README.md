@@ -76,8 +76,6 @@ Building modern AI-native products with scalable APIs, authentication systems, a
 ---
 
 
----
-
 ## 🌐 Connect With Me
 
 <p align="left">
