@@ -13,32 +13,32 @@ Building AI systems that think, learn, and create.
 ## 🚀 About Me
 
 - 🤖 Building AI-powered applications using Multi-Agent Systems, RAG, and Generative AI  
-- 💻 Full-Stack Developer focused on scalable backend architectures and intelligent user experiences  
+- 💻 Full-Stack Developer focused on scalable backend systems and intelligent user experiences  
 - ⚡ Passionate about FastAPI, React, PostgreSQL, Docker, and cloud-native development  
 - 🧠 Exploring Agentic AI, LLM orchestration, and real-world AI automation systems  
-- 🎯 Goal: Build production-ready AI systems that solve meaningful problems  
+- 🎯 Turning ambitious ideas into production-ready software  
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### 👨‍💻 Languages
-<p>
+<p align="left">
   <img src="https://skillicons.dev/icons?i=python,javascript,java,cpp,sql" />
 </p>
 
 ### ⚙️ Backend & Databases
-<p>
+<p align="left">
   <img src="https://skillicons.dev/icons?i=fastapi,nodejs,express,postgres,mysql,mongodb" />
 </p>
 
 ### 🎨 Frontend
-<p>
+<p align="left">
   <img src="https://skillicons.dev/icons?i=react,nextjs,html,css,tailwind" />
 </p>
 
 ### ☁️ DevOps & Tools
-<p>
+<p align="left">
   <img src="https://skillicons.dev/icons?i=docker,git,github,linux,vscode" />
 </p>
 
@@ -75,26 +75,26 @@ Building modern AI-native products with scalable APIs, authentication systems, a
 
 ---
 
-## 📈 GitHub Stats
+## 📊 GitHub Stats
 
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=YOUR_USERNAME&show_icons=true&theme=tokyonight" />
+  <img src="https://github-readme-stats.vercel.app/api?username=sumitpadwal8&show_icons=true&theme=tokyonight" />
 </p>
 
 <p align="center">
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=YOUR_USERNAME&theme=tokyonight" />
+  <img src="https://github-readme-streak-stats.herokuapp.com/?user=sumitpadwal8&theme=tokyonight" />
 </p>
 
 ---
 
-## 🤝 Connect With Me
+## 🌐 Connect With Me
 
-<p>
-  <a href="https://linkedin.com/in/YOUR_LINKEDIN">
+<p align="left">
+  <a href="https://linkedin.com/in/YOUR_LINKEDIN_URL" target="_blank">
     <img src="https://skillicons.dev/icons?i=linkedin" />
   </a>
 
-  <a href="mailto:YOUR_EMAIL">
+  <a href="mailto:sumitpadwal8@gmail.com">
     <img src="https://skillicons.dev/icons?i=gmail" />
   </a>
 </p>
