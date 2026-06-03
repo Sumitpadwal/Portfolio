@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio Website</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="header">
+
+      <a href="#home" class="logo">
+        Sumit <span>Padwal</span>
+      </a>
+
+      <i class="bx bx-menu" id="menu-icon"></i>
+
+      <nav class="navbar">
+          <a href="#home">Home</a>
+          <a href="#about">About</a>
+          <a href="#education">Education</a>
+          <a href="#projects">Projects</a>
+          <a href="#skills">Skills</a>
+          <a href="#contact" class="nav-contact">Contact</a>
+      </nav>
+
+        
+    </header>
+
+    <section class="home" id="home">
+      <div class="home-content">
+        <h1>Hi, It's <span>Sumit</span></h1>
+        <h3>
+          I'm a <span>Software developer</span>
+        </h3>
+        <p>
+          Passionate Full-Stack Software Developer pursuing a Master's in
+          Computer Science at Illinois Tech. Skilled in building scalable
+          digital platforms, AI-driven solutions, and immersive user experiences
+          using React, FastAPI, PostgreSQL, Docker, and Generative AI technologies.
+
+        </p>
+        <div class="social-icons">
+            <a href="https://github.com/Sumitpadwal" target="_blank" rel="noopener noreferrer">
+              <i class="bx bxl-github"></i>
+            </a>
+            
+            <a href="https://www.linkedin.com/in/sumit-padwal-a30a79249/" target="_blank" rel="noopener noreferrer">
+              <i class="bx bxl-linkedin-square"></i>
+            </a>
+            
+
+        </div>
+
+        <div class="btn-group">
+          <a href="#contact" class="btn">Contact</a>
+        </div>  
+      </div>
+
+      <div class="home-img">
+        <img src="image.jpg" alt="">
+      </div>
+    </section>
+
+    <section class="about" id="about">
+
+      <div class="about-img">
+        <img src="image.jpg" alt="">
+      </div>
+
+      <div class="about-content">
+        <h2>About <span>Me</span></h2>
+        <p>
+I’m a Full-Stack Software Developer with a strong interest in building intelligent, scalable, and user-focused digital products. I recently completed my Master’s in Computer Science at Illinois Institute of Technology, where I worked on projects involving full-stack development, AI systems, cloud technologies, and modern software engineering.
+
+I enjoy developing applications that combine clean frontend experiences with powerful backend architecture. My experience includes working with React, Next.js, FastAPI, PostgreSQL, Docker, and modern JavaScript frameworks to build responsive web platforms, secure APIs, authentication systems, and scalable database-driven applications.
+
+Alongside full-stack development, I’ve also worked extensively with Generative AI and intelligent systems. I’ve built AI-powered platforms using multi-agent workflows, RAG pipelines, Gemini APIs, automation systems, and orchestration-based architectures to create smarter and more personalized user experiences.
+
+My projects range from AI tutoring systems and government eligibility recommendation platforms to real estate management applications and grievance tracking systems. I enjoy turning complex ideas into practical, high-performance solutions that are both visually engaging and technically strong.
+
+I’m always exploring new technologies, improving my engineering skills, and building projects that combine creativity, problem-solving, and modern software development.
+
+</p>
+        <a href="https://drive.google.com/file/d/1ZxVgJyMyinO2QHTBqNfi6wANhpy4nN5z/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="btn">Read More</a>
+      </div>
+
+    </section>
+
+    <section class="education" id="education">
+      <h2 class="heading">Education</h2>
+      
+      <div class="education-container">
+        
+        <div class="education-card">
+          <div class="education-header">
+            <i class="bx bx-graduation"></i>
+            <div class="education-date">2024 - 2026</div>
+          </div>
+          <h3>Master of Science in Computer Science</h3>
+          <h4>Illinois Institute of Technology</h4>
+          <p>Chicago, IL</p>
+          <div class="education-tags">
+            <div class="tag">Software Engineering</div>
+            <div class="tag">AI Systems</div>
+            <div class="tag">Databases</div>
+            <div class="tag">Cloud</div>
+            <div class="tag">Big Data</div>
+          </div>
+        </div>
+
+        <div class="education-card">
+          <div class="education-header">
+            <i class="bx bx-graduation"></i>
+            <div class="education-date">2021 - 2024</div>
+          </div>
+          <h3>Bachelor of Science in Computer Engineering</h3>
+          <h4>Ajeenkya D Y Patil University</h4>
+          <p>Pune, India</p>
+          <div class="education-tags">
+            <div class="tag">Programming</div>
+            <div class="tag">Data Structures</div>
+            <div class="tag">Databases</div>
+            <div class="tag">Web Development</div>
+          </div>
+        </div>
+
+        <div class="education-card">
+          <div class="education-header">
+            <i class="bx bx-graduation"></i>
+            <div class="education-date">2019 - 2021</div>
+          </div>
+          <h3>Diploma in Information Technology</h3>
+          <h4>AISSMS Polytechnic</h4>
+          <p>Pune, India</p>
+          <div class="education-tags">
+            <div class="tag">Programming Fundamentals</div>
+            <div class="tag">Web Development</div>
+            <div class="tag">Database Basics</div>
+            <div class="tag">Computer Networks</div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="projects" id="projects">
+
+      <h2 class="heading">Projects</h2>
+
+      <div class="projects-box">
+
+        <div class="project-card">
+          <img src="project1.png" alt="">
+
+          <h3>GovAid Finder</h3>
+          <p>
+            An AI-powered platform that transforms complicated government schemes into
+            personalized opportunities. Built with FastAPI, Next.js, PostgreSQL, and
+            Gemini AI to intelligently analyze documents, automate eligibility checks,
+            and simplify access to public benefits.
+          </p>
+          <a href="https://github.com/Sumitpadwal/Govaid-Finder" target="_blank" rel="noopener noreferrer" class="btn">Review Project</a>
+        </div>
+
+        <div class="project-card">
+          <img src="project2.png" alt="">
+
+          <h3>TechFusion AI Tutor</h3>
+          <p>
+            A multi-agent AI learning system designed to teach like a real mentor.
+            Combines LLM orchestration, personalized learning agents, multimodal
+            generation, and DeepMind models to create adaptive educational experiences
+            from user-provided resources.
+          </p>
+          <a href="https://github.com/Sumitpadwal/Tech-Fusion-AI-tutor" target="_blank" rel="noopener noreferrer" class="btn">Review Project</a>
+        </div>
+
+        <div class="project-card">
+          <img src="project3.png" alt="">
+
+          <h3>AI Teamwork Strategist</h3>
+          <p>
+            An experimental multi-agent AI environment that simulates real software
+            engineering teams including Product Owners, Developers, QA, and DevOps.
+            Built to analyze LLM reasoning, collaboration failures, and intelligent
+            workflow coordination.
+          </p>
+          <a href="https://github.com/Sumitpadwal/AI-Teamwork-Strategist" target="_blank" rel="noopener noreferrer" class="btn">Review Project</a>
+        </div>
+
+        <div class="project-card">
+          <img src="project4.png" alt="">
+
+          <h3>Real Estate Management System</h3>
+          <p>
+            A full-stack property management platform built with Flask and PostgreSQL,
+            featuring secure authentication, advanced SQL logic, booking validation,
+            payment workflows, and scalable database architecture for real-world usage.
+          </p>
+          <a href="https://github.com/Sumitpadwal/Real-Estate-Management-System" target="_blank" rel="noopener noreferrer" class="btn">Review Project</a>
+        </div>
+<div class="project-card">
+  <img src="project5.png" alt="">
+  <h3>Grievance Redressal System</h3>
+  <p>
+    A web-based grievance management platform designed to streamline complaint registration, tracking, and resolution workflows. Built using PHP and MySQL with a responsive frontend interface, enabling users and administrators to efficiently manage and monitor grievance records in real time.
+  </p>
+  <a href="https://github.com/Sumitpadwal/Grievance-Redressal-System" target="_blank" rel="noopener noreferrer" class="btn">Review Project</a>
+</div>
+      </div>
+    </section>
+
+    <section class="skills" id="skills">
+      <h2 class="heading">Skills</h2>
+
+      <div class="skills-container">
+
+        <div class="skill-box">
+          <div class="skill-info">
+            <i class="bx bx-code-alt"></i>
+            <h4>Frontend Development</h4>
+            <p>React, Next.js, HTML, CSS, JavaScript, Tailwind CSS, Responsive UI</p>
+          </div>
+        </div>
+
+        <div class="skill-box">
+          <div class="skill-info">
+            <i class="bx bx-server"></i>
+            <h4>Backend Development</h4>
+            <p>Python, FastAPI, Flask, REST APIs, Authentication, API Integration</p>
+          </div>
+        </div>
+
+        <div class="skill-box">
+          <div class="skill-info">
+            <i class="bx bx-data"></i>
+            <h4>Database Systems</h4>
+            <p>PostgreSQL, SQL, Database Design, Joins, Transactions, Data Modeling</p>
+          </div>
+        </div>
+
+        <div class="skill-box">
+          <div class="skill-info">
+            <i class="bx bx-brain"></i>
+            <h4>AI & Generative AI</h4>
+            <p>Gemini AI, Multi-Agent Systems, RAG Pipelines, Prompt Engineering, AI Automation</p>
+          </div>
+        </div>
+
+        <div class="skill-box">
+          <div class="skill-info">
+            <i class="bx bx-git-branch"></i>
+            <h4>DevOps & Tools</h4>
+            <p>Docker, Git, GitHub, VS Code, Postman, Cloud Deployment</p>
+          </div>
+        </div>
+
+        <div class="skill-box">
+          <div class="skill-info">
+            <i class="bx bx-cog"></i>
+            <h4>Software Engineering</h4>
+            <p>Full-Stack Architecture, Debugging, Clean Code, System Design, Agile Workflow</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="contact-container">
+        <div class="contact-label">// CONTACT</div>
+        <h2 class="contact-heading">Let's <span>Build Something</span></h2>
+        
+        <div class="contact-description">
+          <p>Open to Software Engineering, Full-Stack Development, AI Systems, and Cloud Engineering opportunities.</p>
+          <p class="auth-tag">Work Authorization: F-1 OPT / STEM OPT eligible with EAD.</p>
+        </div>
+
+        <a href="mailto:sumitpadwal8@gmail.com" class="email-card">
+          <div class="email-info-left">
+            <i class="bx bx-envelope"></i>
+            <div class="email-text">sumitpadwal8@gmail.com</div>
+          </div>
+          <i class="bx bx-right-arrow-alt arrow-icon"></i>
+        </a>
+
+        <div class="contact-details-row">
+          <div class="detail-item">
+            <i class="bx bx-map"></i>
+            <div class="detail-text">Chicago, IL</div>
+          </div>
+          <a href="tel:+13123580500" class="contact-phone">
+            <i class="bx bx-phone"></i>
+            <span>+1 (312) 358-0500</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="social-icons">
+            <a href="https://github.com/Sumitpadwal" target="_blank" rel="noopener noreferrer">
+              <i class="bx bxl-github"></i>
+            </a>
+            
+            <a href="https://www.linkedin.com/in/sumit-padwal-a30a79249/" target="_blank" rel="noopener noreferrer">
+              <i class="bx bxl-linkedin-square"></i>
+            </a>
+            
+
+        </div>
+
+        <ul class="list">
+          <li>
+            <a href="#">FAQ</a>
+          </li>
+
+          <li>
+            <a href="#about">About</a>
+          </li>
+
+          <li>
+            <a href="#education">Education</a>
+          </li>
+
+          <li>
+            <a href="#projects">Projects</a>
+          </li>
+
+          <li>
+            <a href="#skills">Skills</a>
+          </li>
+
+          <li>
+            <a href="#contact">Contact</a>
+          </li>
+        </ul>
+
+      <p class="copyright">Copyright © 2026 Sumit Padwal  |  All rights reserved.</p>
+
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
