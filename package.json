@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "ingest": "node backend/ingest.js",
+    "ingest:deploy": "node backend/ingest-deploy.js",
     "start": "node backend/server.js",
     "dev": "node --watch backend/server.js"
   },

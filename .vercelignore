@@ -1,0 +1,8 @@
+.cache/
+vector_store/
+backend/
+data/
+.vscode/
+.env
+.env.*
+README.md

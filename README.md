@@ -2,7 +2,12 @@
 
 This repository keeps the existing static portfolio and adds a bottom-right AI chat widget backed by a local retrieval-augmented generation (RAG) service.
 
-The agent reads Sumit's local profile files, chunks them, creates MiniLM embeddings locally, and stores the vectors in a file-backed Vectra database under `vector_store/`. API keys are used only by the server for optional answer generation and are never sent to the browser.
+The agent reads Sumit's local profile files and supports two retrieval indexes:
+
+- Local development uses MiniLM embeddings and Vectra under `vector_store/`.
+- Vercel uses compact OpenAI embeddings under `deploy_vector_store/` without bundling ONNX or model binaries.
+
+API keys are used only by the server and are never sent to the browser.
 
 ## Architecture
 
@@ -26,7 +31,7 @@ The agent reads Sumit's local profile files, chunks them, creates MiniLM embeddi
 npm install
 ```
 
-The first ingestion downloads the local embedding model into `.cache/models/`. The matching model and generated Vectra index are included in this repository so Vercel can create query embeddings that are compatible with the stored vectors.
+The first local ingestion downloads the MiniLM model into `.cache/models/`. Local model files and the Vectra index are excluded from Git.
 
 ## Add Profile Data
 
@@ -75,6 +80,7 @@ Run this after any profile file changes:
 
 ```bash
 npm run ingest
+npm run ingest:deploy
 ```
 
 ## Run Locally
@@ -101,12 +107,12 @@ Content-Type: application/json
 The existing static site can still be deployed by itself, but the AI chat requires a Node-compatible backend host with persistent access to the generated vector index.
 
 1. Import the GitHub repository into Vercel.
-2. Set `OPENAI_API_KEY` or `GEMINI_API_KEY` in Vercel Project Settings > Environment Variables for the best generated answers.
+2. Set `OPENAI_API_KEY` in Vercel Project Settings > Environment Variables.
 3. Deploy. Vercel detects `api/chat.js` and `api/health.js` as Node.js functions.
-4. `vercel.json` bundles the local MiniLM model and Vectra index with the chat function.
+4. `vercel.json` selects the Other framework preset, disables the frontend build command, uses the repository root for static files, and bundles only `deploy_vector_store/`.
 5. Never expose keys in `script.js`, HTML, build-time public variables, or Git.
 
-After changing files in `data/`, run `npm run ingest`, commit the updated `vector_store/`, and redeploy.
+After changing files in `data/`, run both ingestion commands, commit the updated `deploy_vector_store/`, and redeploy.
 
 ## GitHub Commands
 
@@ -120,7 +126,7 @@ git diff
 Commit and push:
 
 ```bash
-git add .gitignore .env.example README.md package.json package-lock.json api backend data vector_store vercel.json index.html style.css script.js
+git add .gitignore .env.example README.md package.json package-lock.json api backend data deploy_vector_store vercel.json index.html style.css script.js
 git commit -m "Add local RAG portfolio AI agent"
 git push origin main
 ```

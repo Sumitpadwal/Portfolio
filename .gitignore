@@ -3,9 +3,8 @@
 .env.*
 !.env.example
 node_modules/
-.cache/*
-!.cache/models/
-!.cache/models/**
+vector_store/
+.cache/
 *.log
 npm-debug.log*
 .DS_Store

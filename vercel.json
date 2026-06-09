@@ -1,8 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": null,
+  "installCommand": "npm install",
+  "outputDirectory": null,
   "functions": {
     "api/chat.js": {
-      "includeFiles": "{vector_store/**,.cache/models/**}",
+      "includeFiles": "deploy_vector_store/**",
       "maxDuration": 60
     }
   }
