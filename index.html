@@ -346,6 +346,51 @@ I’m always exploring new technologies, improving my engineering skills, and bu
 
     </footer>
 
+    <aside class="ai-agent" aria-label="Ask Sumit AI">
+      <div class="ai-agent-nudge" id="ai-agent-nudge">
+        <button class="ai-nudge-close" id="ai-nudge-close" type="button" aria-label="Dismiss message">&times;</button>
+        <strong>Curious about my work?</strong>
+        <span>Ask my AI assistant about projects, skills, or experience.</span>
+      </div>
+
+      <section class="ai-chat-panel" id="ai-chat-panel" aria-hidden="true">
+        <header class="ai-chat-header">
+          <div class="ai-avatar"><i class="bx bx-bot"></i></div>
+          <div>
+            <h2>Ask Sumit AI</h2>
+            <p><span class="ai-status-dot"></span> Portfolio assistant</p>
+          </div>
+          <button class="ai-chat-close" id="ai-chat-close" type="button" aria-label="Close chat">
+            <i class="bx bx-x"></i>
+          </button>
+        </header>
+
+        <div class="ai-chat-messages" id="ai-chat-messages" aria-live="polite">
+          <div class="ai-message ai-message-bot">
+            Hi! I can answer questions about Sumit's projects, skills, education, and career goals.
+          </div>
+        </div>
+
+        <div class="ai-suggestions" id="ai-suggestions">
+          <button type="button">What are Sumit's best projects?</button>
+          <button type="button">What AI skills does Sumit have?</button>
+          <button type="button">What roles is Sumit seeking?</button>
+        </div>
+
+        <form class="ai-chat-form" id="ai-chat-form">
+          <label class="sr-only" for="ai-chat-input">Ask a question about Sumit</label>
+          <textarea id="ai-chat-input" maxlength="500" rows="1" placeholder="Ask about Sumit..." required></textarea>
+          <button type="submit" aria-label="Send question"><i class="bx bx-send"></i></button>
+        </form>
+        <p class="ai-disclaimer">Answers are grounded in Sumit's local profile data.</p>
+      </section>
+
+      <button class="ai-chat-launcher" id="ai-chat-launcher" type="button" aria-label="Open Ask Sumit AI">
+        <i class="bx bx-bot"></i>
+        <span>Ask Sumit AI</span>
+      </button>
+    </aside>
+
     <script src="script.js"></script>
   </body>
 </html>
