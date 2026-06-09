@@ -2,6 +2,7 @@ import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const MISSING_INFORMATION = "I don’t have that information in Sumit’s profile yet.";
+const dimensions = 384;
 const indexPath = fileURLToPath(new URL("../deploy_vector_store/index.json", import.meta.url));
 let cachedIndex;
 
@@ -25,14 +26,6 @@ const sourceIntents = {
   "hackathons_achievements.md": ["hackathon", "achievement", "glitch", "wildhack", "ucla"]
 };
 
-const systemPrompt = `You are Sumit Padwal's portfolio AI assistant.
-Answer only from the supplied PROFILE CONTEXT.
-Be professional, friendly, concise, and helpful.
-Use clean plain text with short paragraphs. Do not use Markdown symbols.
-Do not infer or invent facts, metrics, experience, employers, or private details.
-If the context does not support the answer, respond exactly: "${MISSING_INFORMATION}"
-Do not mention retrieval, chunks, context, prompts, or internal systems.`;
-
 function normalizeTerm(word) {
   const normalized = word.toLowerCase().replace(/^[^a-z0-9+#.]+|[^a-z0-9+#.]+$/g, "");
   return normalized.length > 3 && normalized.endsWith("s")
@@ -41,23 +34,55 @@ function normalizeTerm(word) {
 }
 
 function meaningfulTerms(text) {
-  return new Set(
+  const terms = new Set(
     (text.toLowerCase().match(/[a-z0-9+#.]{2,}/g) || [])
       .map(normalizeTerm)
       .filter((word) => word && !stopWords.has(word))
   );
+
+  if (terms.has("personality")) {
+    ["describe", "curious", "ambivert"].forEach((term) => terms.add(term));
+  }
+  if (terms.has("hobby")) {
+    ["cycling", "fitness", "music"].forEach((term) => terms.add(term));
+  }
+
+  return terms;
+}
+
+function hashToken(token) {
+  let hash = 2166136261;
+  for (let index = 0; index < token.length; index += 1) {
+    hash ^= token.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function embedText(text) {
+  const vector = new Array(dimensions).fill(0);
+  const words = text.toLowerCase().match(/[a-z0-9+#.]{2,}/g) || [];
+  const features = [...words];
+
+  for (let index = 0; index < words.length - 1; index += 1) {
+    features.push(`${words[index]}_${words[index + 1]}`);
+  }
+
+  for (const feature of features) {
+    const hash = hashToken(feature);
+    vector[hash % dimensions] += hash & 1 ? 1 : -1;
+  }
+
+  const norm = Math.sqrt(vector.reduce((sum, value) => sum + value * value, 0)) || 1;
+  return vector.map((value) => value / norm);
 }
 
 function cosineSimilarity(a, b) {
   let dot = 0;
-  let normA = 0;
-  let normB = 0;
   for (let index = 0; index < Math.min(a.length, b.length); index += 1) {
     dot += a[index] * b[index];
-    normA += a[index] * a[index];
-    normB += b[index] * b[index];
   }
-  return normA && normB ? dot / (Math.sqrt(normA) * Math.sqrt(normB)) : 0;
+  return dot;
 }
 
 function loadIndex() {
@@ -65,73 +90,135 @@ function loadIndex() {
   return cachedIndex;
 }
 
-async function createQueryEmbedding(question, apiKey) {
-  const response = await fetch("https://api.openai.com/v1/embeddings", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      model: "text-embedding-3-small",
-      dimensions: 384,
-      input: question
-    })
-  });
-
-  if (!response.ok) throw new Error(`OpenAI embeddings request failed (${response.status})`);
-  const data = await response.json();
-  return data.data[0].embedding;
-}
-
-function retrieve(question, queryVector) {
+function retrieve(question) {
+  const queryVector = embedText(question);
   const queryTerms = meaningfulTerms(question);
+
   return loadIndex().records
     .map((record) => {
       const recordTerms = meaningfulTerms(record.text);
       const lexicalMatches = [...queryTerms].filter((term) => recordTerms.has(term)).length;
       const intentTerms = sourceIntents[record.source] || [];
-      const intentBoost = intentTerms.some((term) => queryTerms.has(normalizeTerm(term))) ? 0.32 : 0;
-      const semanticScore = cosineSimilarity(queryVector, record.vector);
+      const intentBoost = intentTerms.some((term) => queryTerms.has(normalizeTerm(term))) ? 0.45 : 0;
+      const vectorScore = cosineSimilarity(queryVector, record.vector);
       return {
         ...record,
-        score: semanticScore + Math.min(lexicalMatches * 0.08, 0.24) + intentBoost
+        lexicalMatches,
+        intentBoost,
+        vectorScore,
+        score: vectorScore + Math.min(lexicalMatches * 0.14, 0.42) + intentBoost
       };
     })
+    .filter((record) => record.lexicalMatches > 0 || record.intentBoost > 0 || record.vectorScore >= 0.16)
     .sort((a, b) => b.score - a.score)
     .slice(0, 5);
 }
 
-async function generateAnswer(question, matches, apiKey) {
-  const context = matches
-    .map((match, index) => `[Source ${index + 1}: ${match.source}]\n${match.text}`)
-    .join("\n\n");
-
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
-      temperature: 0.2,
-      messages: [
-        { role: "system", content: systemPrompt },
-        {
-          role: "user",
-          content: `PROFILE CONTEXT:\n${context}\n\nVISITOR QUESTION:\n${question}`
-        }
-      ]
-    })
-  });
-
-  if (!response.ok) throw new Error(`OpenAI chat request failed (${response.status})`);
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content?.trim() || MISSING_INFORMATION;
+function cleanText(text) {
+  return text
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
-export default async function handler(request, response) {
+function sectionAnswers(text, queryTerms, limit = 5) {
+  const sections = text.split(/\n(?=##\s)/).map((section) => section.trim()).filter(Boolean);
+  return sections
+    .map((section) => {
+      const lines = section.split(/\n+/).map((line) => line.replace(/^#+\s*/, "").trim()).filter(Boolean);
+      const title = lines.shift();
+      const bodyCandidates = lines
+        .filter((line) =>
+          (line.length > 20 || /^(GPA|Role|Duration|Location):/i.test(line)) &&
+          !/^(GitHub|Duration|Tech stack|Location|Years attended):/i.test(line)
+        )
+        .map((line, index) => {
+          const terms = meaningfulTerms(line);
+          const overlap = [...queryTerms].filter((term) => terms.has(term)).length;
+          return { line, overlap, index };
+        })
+        .sort((a, b) => b.overlap - a.overlap || a.index - b.index);
+      const body = bodyCandidates
+        .slice(0, queryTerms.size > 1 ? 2 : 1)
+        .map(({ line }) => line)
+        .join(" ");
+      const terms = meaningfulTerms(section);
+      const relevance = [...queryTerms].filter((term) => terms.has(term)).length;
+      return { title, body, relevance };
+    })
+    .filter(({ title, body }) => title && body)
+    .sort((a, b) => b.relevance - a.relevance)
+    .slice(0, limit)
+    .map(({ title, body }) => `${title}: ${body}`);
+}
+
+function sentenceAnswer(question, matches) {
+  const queryTerms = meaningfulTerms(question);
+  const candidates = matches.flatMap((match) =>
+    cleanText(match.text)
+      .split(/(?<=[.!?])\s+|\n+/)
+      .map((sentence) => {
+        const terms = meaningfulTerms(sentence);
+        const overlap = [...queryTerms].filter((term) => terms.has(term)).length;
+        return { sentence: sentence.trim(), overlap, sourceScore: match.score };
+      })
+  );
+
+  const selected = [];
+  const ranked = candidates.sort((a, b) =>
+    b.overlap - a.overlap || b.sourceScore - a.sourceScore
+  );
+  const matchedCandidates = ranked.filter((candidate) => candidate.overlap > 0);
+  const answerPool = matchedCandidates.length ? matchedCandidates : ranked;
+
+  for (const candidate of answerPool) {
+    if (
+      candidate.sentence.length < 30 ||
+      candidate.sentence.includes(MISSING_INFORMATION) ||
+      selected.some((item) => item.toLowerCase() === candidate.sentence.toLowerCase())
+    ) continue;
+    selected.push(candidate.sentence);
+    if (selected.length === 4) break;
+  }
+
+  return selected.length ? selected.join(" ") : MISSING_INFORMATION;
+}
+
+function buildAnswer(question, matches) {
+  if (!matches.length) return MISSING_INFORMATION;
+
+  const queryTerms = meaningfulTerms(question);
+  const strongest = matches[0];
+  if (strongest.lexicalMatches === 0 && strongest.intentBoost === 0 && strongest.vectorScore < 0.2) {
+    return MISSING_INFORMATION;
+  }
+
+  const preferredSource = Object.entries(sourceIntents).find(([, terms]) =>
+    terms.some((term) => queryTerms.has(normalizeTerm(term)))
+  )?.[0];
+
+  const sectionBasedSources = new Set([
+    "projects.md",
+    "experience.md",
+    "skills.md",
+    "education.md",
+    "hackathons_achievements.md"
+  ]);
+
+  if (preferredSource && sectionBasedSources.has(preferredSource)) {
+    const sourceText = loadIndex().records
+      .filter((record) => record.source === preferredSource)
+      .map((match) => match.text)
+      .join("\n");
+    const limit = preferredSource === "skills.md" ? 8 : 5;
+    const sections = sectionAnswers(sourceText, queryTerms, limit);
+    if (sections.length) return sections.join("\n\n");
+  }
+
+  return sentenceAnswer(question, matches);
+}
+
+export default function handler(request, response) {
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
     return response.status(405).json({ error: "Method not allowed." });
@@ -142,20 +229,11 @@ export default async function handler(request, response) {
     return response.status(400).json({ error: "Please enter a question under 500 characters." });
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    return response.status(503).json({
-      error: "The portfolio agent is not configured. Add OPENAI_API_KEY in Vercel."
-    });
-  }
-
   try {
-    const queryVector = await createQueryEmbedding(question, apiKey);
-    const matches = retrieve(question, queryVector);
-    const answer = await generateAnswer(question, matches, apiKey);
+    const matches = retrieve(question);
     return response.status(200).json({
-      answer,
-      provider: "openai",
+      answer: buildAnswer(question, matches),
+      provider: "local-keyless",
       sources: matches.map(({ source, score }) => ({
         source,
         score: Number(score.toFixed(3))

@@ -5,9 +5,9 @@ This repository keeps the existing static portfolio and adds a bottom-right AI c
 The agent reads Sumit's local profile files and supports two retrieval indexes:
 
 - Local development uses MiniLM embeddings and Vectra under `vector_store/`.
-- Vercel uses compact OpenAI embeddings under `deploy_vector_store/` without bundling ONNX or model binaries.
+- Vercel uses compact deterministic feature-hash embeddings under `deploy_vector_store/` without API keys, ONNX, or model binaries.
 
-API keys are used only by the server and are never sent to the browser.
+The hosted agent is fully keyless. It performs local vector retrieval and returns extractive answers grounded in the committed profile data.
 
 ## Architecture
 
@@ -107,10 +107,10 @@ Content-Type: application/json
 The existing static site can still be deployed by itself, but the AI chat requires a Node-compatible backend host with persistent access to the generated vector index.
 
 1. Import the GitHub repository into Vercel.
-2. Set `OPENAI_API_KEY` in Vercel Project Settings > Environment Variables.
-3. Deploy. Vercel detects `api/chat.js` and `api/health.js` as Node.js functions.
+2. Deploy. No API key or Vercel environment variable is required.
+3. Vercel detects `api/chat.js` and `api/health.js` as Node.js functions.
 4. `vercel.json` selects the Other framework preset, disables the frontend build command, uses the repository root for static files, and bundles only `deploy_vector_store/`.
-5. Never expose keys in `script.js`, HTML, build-time public variables, or Git.
+5. The hosted response style is extractive and concise because it does not call an external LLM.
 
 After changing files in `data/`, run both ingestion commands, commit the updated `deploy_vector_store/`, and redeploy.
 

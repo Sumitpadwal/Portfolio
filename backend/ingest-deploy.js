@@ -1,11 +1,36 @@
 import fs from "node:fs";
 import path from "node:path";
-import { chunkDocument } from "./chunker.js";
 import { config, rootDir } from "./config.js";
 
-const apiKey = process.env.OPENAI_API_KEY || config.openAiKey;
-if (!apiKey) {
-  throw new Error("OPENAI_API_KEY is required to build the deployment vector index.");
+const dimensions = 384;
+
+function hashToken(token) {
+  let hash = 2166136261;
+  for (let index = 0; index < token.length; index += 1) {
+    hash ^= token.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function embedText(text) {
+  const vector = new Array(dimensions).fill(0);
+  const words = text.toLowerCase().match(/[a-z0-9+#.]{2,}/g) || [];
+  const features = [...words];
+
+  for (let index = 0; index < words.length - 1; index += 1) {
+    features.push(`${words[index]}_${words[index + 1]}`);
+  }
+
+  for (const feature of features) {
+    const hash = hashToken(feature);
+    const position = hash % dimensions;
+    const sign = hash & 1 ? 1 : -1;
+    vector[position] += sign;
+  }
+
+  const norm = Math.sqrt(vector.reduce((sum, value) => sum + value * value, 0)) || 1;
+  return vector.map((value) => Number((value / norm).toFixed(6)));
 }
 
 const supportedExtensions = new Set([".md", ".txt"]);
@@ -15,32 +40,28 @@ const files = fs
   .map((entry) => entry.name)
   .sort();
 
-const chunks = files.flatMap((file) => {
-  const text = fs.readFileSync(path.join(config.dataDir, file), "utf8");
-  return chunkDocument(text, file);
-});
+function sectionRecords(text, source) {
+  const normalized = text.replace(/\r/g, "").trim();
+  const sections = normalized
+    .split(/(?=^##\s+)/m)
+    .map((section) => section.trim())
+    .filter(Boolean);
 
-const response = await fetch("https://api.openai.com/v1/embeddings", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${apiKey}`
-  },
-  body: JSON.stringify({
-    model: "text-embedding-3-small",
-    dimensions: 384,
-    input: chunks.map((chunk) => chunk.text)
-  })
-});
-
-if (!response.ok) {
-  throw new Error(`OpenAI embeddings request failed (${response.status}): ${await response.text()}`);
+  return sections.map((section, index) => ({
+    id: `${source}-${index + 1}`,
+    source,
+    text: section
+  }));
 }
 
-const payload = await response.json();
-const records = chunks.map((chunk, index) => ({
+const chunks = files.flatMap((file) => {
+  const text = fs.readFileSync(path.join(config.dataDir, file), "utf8");
+  return sectionRecords(text, file);
+});
+
+const records = chunks.map((chunk) => ({
   ...chunk,
-  vector: payload.data[index].embedding
+  vector: embedText(chunk.text)
 }));
 
 const outputDir = path.join(rootDir, "deploy_vector_store");
@@ -48,13 +69,13 @@ fs.mkdirSync(outputDir, { recursive: true });
 fs.writeFileSync(
   path.join(outputDir, "index.json"),
   JSON.stringify({
-    version: 1,
-    provider: "openai",
-    model: "text-embedding-3-small",
-    dimensions: 384,
+    version: 2,
+    provider: "local-feature-hashing",
+    model: "fnv1a-word-bigram",
+    dimensions,
     createdAt: new Date().toISOString(),
     records
   })
 );
 
-console.log(`Saved ${records.length} deployment vectors to deploy_vector_store/index.json`);
+console.log(`Saved ${records.length} keyless deployment vectors to deploy_vector_store/index.json`);
