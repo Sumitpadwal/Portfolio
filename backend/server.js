@@ -2,8 +2,7 @@ import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import { config, rootDir } from "./config.js";
-import { generateAnswer } from "./providers.js";
-import { retrieve } from "./retriever.js";
+import { answerQuestion } from "./chat-service.js";
 
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
@@ -35,24 +34,14 @@ async function readJson(request) {
 async function handleChat(request, response) {
   try {
     const body = await readJson(request);
-    const question = String(body.question || "").trim();
-    if (!question || question.length > 500) {
-      return sendJson(response, 400, { error: "Please enter a question under 500 characters." });
-    }
-
-    const matches = await retrieve(question);
-    const result = await generateAnswer(question, matches);
-    return sendJson(response, 200, {
-      answer: result.answer,
-      provider: result.provider,
-      sources: matches.map(({ source, score }) => ({ source, score: Number(score.toFixed(3)) }))
-    });
+    return sendJson(response, 200, await answerQuestion(body.question));
   } catch (error) {
     console.error(error);
-    return sendJson(response, 500, {
-      error: error.message.includes("Vector index")
-        ? error.message
-        : "The portfolio agent is temporarily unavailable."
+    const status = error.statusCode || 500;
+    return sendJson(response, status, {
+      error: status === 500
+        ? "The portfolio agent is temporarily unavailable."
+        : error.message
     });
   }
 }

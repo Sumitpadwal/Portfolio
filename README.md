@@ -26,7 +26,7 @@ The agent reads Sumit's local profile files, chunks them, creates MiniLM embeddi
 npm install
 ```
 
-The first ingestion downloads the local embedding model into `.cache/models/`. The cache and generated vector index are excluded from Git.
+The first ingestion downloads the local embedding model into `.cache/models/`. The matching model and generated Vectra index are included in this repository so Vercel can create query embeddings that are compatible with the stored vectors.
 
 ## Add Profile Data
 
@@ -100,11 +100,13 @@ Content-Type: application/json
 
 The existing static site can still be deployed by itself, but the AI chat requires a Node-compatible backend host with persistent access to the generated vector index.
 
-1. Run `npm install` and `npm run ingest` during the build step.
-2. Set `OPENAI_API_KEY` or `GEMINI_API_KEY` in the hosting provider's secret manager.
-3. Start the service with `npm start`.
-4. Never expose keys in `script.js`, HTML, build-time public variables, or Git.
-5. For a split frontend/backend deployment, set the chat fetch URL to the secured backend origin and configure a narrow CORS allowlist.
+1. Import the GitHub repository into Vercel.
+2. Set `OPENAI_API_KEY` or `GEMINI_API_KEY` in Vercel Project Settings > Environment Variables for the best generated answers.
+3. Deploy. Vercel detects `api/chat.js` and `api/health.js` as Node.js functions.
+4. `vercel.json` bundles the local MiniLM model and Vectra index with the chat function.
+5. Never expose keys in `script.js`, HTML, build-time public variables, or Git.
+
+After changing files in `data/`, run `npm run ingest`, commit the updated `vector_store/`, and redeploy.
 
 ## GitHub Commands
 
@@ -118,7 +120,7 @@ git diff
 Commit and push:
 
 ```bash
-git add .gitignore .env.example README.md package.json package-lock.json data backend index.html style.css script.js
+git add .gitignore .env.example README.md package.json package-lock.json api backend data vector_store vercel.json index.html style.css script.js
 git commit -m "Add local RAG portfolio AI agent"
 git push origin main
 ```

@@ -48,6 +48,10 @@ async function askSumit(question) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ question })
         });
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+            throw new Error('The hosted AI API is not configured correctly.');
+        }
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Unable to reach the portfolio agent.');
         typing.textContent = data.answer;
